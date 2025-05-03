@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To Do Application</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #f1fdf8, #d1f9e2);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-top: 60px;
+      color: #026b3d;
+    }
+
+    p {
+      font-size: 18px;
+      margin-bottom: 40px;
+      color: #444;
+    }
+
+    /* Header Styles */
+    header {
+      background-color: #beffd7;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    }
+
+    header .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #026b3d;
+    }
+
+    header nav {
+      display: flex;
+      align-items: center;
+    }
+
+    header nav a {
+      color: #555;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    header nav a:hover {
+      color: #38b869;
+    }
+
+    header .btn {
+      background: linear-gradient(to right, #38b869, #2d9953);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-left: 20px;
+    }
+
+    header .btn:hover {
+      background: linear-gradient(to right, #2d9953, #38b869);
+    }
+
+    /* Main Content Styles */
+    .model-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 0 30px 60px;
+    }
+
+    .card {
+      background: white;
+      width: 280px;
+      padding: 25px 20px;
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .emoji {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .tooltip {
+      visibility: hidden;
+      background-color: #333;
+      color: #fff;
+      font-size: 14px;
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 260px;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .card:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* Additional Section Styles */
+    section {
+      padding: 60px 20px;
+      background: linear-gradient(to right, #f1fdf8, #d1f9e2);
+    }
+
+    section h2 {
+      font-size: 30px;
+      margin-bottom: 20px;
+      color: #026b3d;
+    }
+
+    section p {
+      font-size: 18px;
+      color: #444;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Footer Styles */
+    footer {
+      background-color: #289968;
+      color: white;
+      padding: 1px;
+      text-align: center;
+    }
+
+    #copilot-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #38b869;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  font-weight: bold;
+}
+
+#copilot-chat {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 300px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 999;
+}
+
+#copilot-header {
+  background-color: #026b3d;
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#copilot-messages {
+  padding: 10px;
+  height: 200px;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+#copilot-input {
+  border: none;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+.message {
+  margin-bottom: 10px;
+}
+
+.message.bot {
+  color: #026b3d;
+}
+
+.message.user {
+  text-align: right;
+  color: #444;
+}
+
+
+
+/**/
+.welcome-workspace-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 50px 80px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.welcome-message {
+  flex: 1;
+  min-width: 300px;
+}
+
+.workspace-setup {
+  flex: 1;
+  max-width: 500px;
+}
+
+.workspace-box {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.workspace-box h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #1e1e1e;
+}
+
+.workspace-box p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.feature-item {
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.feature-item:hover {
+  background: #e0e7ff;
+}
+
+.get-started-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(to right, #6a5af9, #b845f7);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.get-started-btn:hover {
+  opacity: 0.9;
+}
+
+
+
+    
+/* Contact Form Container */
+#contact {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 350px;  /* Reduced width for a smaller box */
+  margin: 50px auto;
+  text-align: center;
+}
+
+#contact h2 {
+  font-size: 30px;
+  color: #026b3d;
+  margin-bottom: 20px;
+}
+
+#contact p {
+  font-size: 18px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+#contact form {
+  display: flex;
+  flex-direction: column;
+}
+
+#contact input[type="text"],
+#contact input[type="email"],
+#contact textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+#contact button {
+  padding: 12px;
+  background-color: #38b869;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#contact button:hover {
+  background-color: #2d9953;
+}
+
+#contact textarea {
+  height: 100px;  /* Set a height for the textarea */
+  resize: none;   /* Disable resizing */
+}
+
+@media (max-width: 768px) {
+  #contact {
+    width: 90%; /* Make the form container responsive */
+    margin: 20px auto;
+  }
+}
+
+    @media (max-width: 768px) {
+      header nav {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      header .btn {
+        margin-left: 0;
+        margin-top: 10px;
+      }
+
+      .model-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .card {
+        width: 90%;
+      }
+    }
+
+    /* Sign Up / Sign In Form Styles */
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      margin: 50px auto;
+      text-align: center;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #38b869;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2d9953;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: #38b869;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .toggle-btn:hover {
+      color: #026b3d;
+    }
+
+    .form-hidden {
+      display: none;
+    }
+
+
+    .model-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.card {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 250px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.card .emoji {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-hidden {
+  display: none !important;
+}
+
+/*  */
+.team-section {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f0fdf4;
+}
+
+.team-section h2 {
+  font-size: 28px;
+  color: #064e3b;
+  margin-bottom: 10px;
+}
+
+.team-section p {
+  font-size: 16px;
+  color: #4b5563;
+  margin-bottom: 40px;
+}
+
+.team-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.team-member {
+  position: relative;
+  width: 200px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.team-member:hover {
+  transform: translateY(-10px);
+}
+
+.team-member img {
+  width: 100%;
+  border-radius: 50%;
+  border: 4px solid #10b981;
+  transition: transform 0.3s ease;
+}
+
+.team-member h3 {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #065f46;
+}
+
+.team-member p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.team-hover {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(16, 185, 129, 0.9);
+  color: white;
+  padding: 10px;
+  border-radius: 0 0 20px 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.team-member:hover .team-hover {
+  opacity: 1;
+}
+
+
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo" aria-label="To-Do App logo">TO-DO-APP 🏷️ </div>
+    <nav aria-label="Main navigation">
+      <a href="#home" aria-label="Home page">Home</a>
+      <a href="#about" aria-label="About page">About</a>
+      <a href="#product" aria-label="Product page">Product</a>
+      <a href="#pricing" aria-label="Pricing page">Pricing</a>
+      <a href="#enterprise" aria-label="Enterprise page">Enterprise</a>
+      <a href="#contact" aria-label="Contact page">Contact</a>
+      <a href="javascript:void(0);" class="btn" onclick="toggleForms()">Log In</a>
+      <a href="javascript:void(0);" class="btn" onclick="toggleForms()">Sign Up</a>
+    </nav>
+  </header>
+  <div id="copilot-button" onclick="toggleCopilot()">🤖 Need Help?</div>
+
+<div id="copilot-chat" class="form-hidden">
+  <div id="copilot-header">Copilot Assistant</div>
+  <div id="copilot-messages">
+    <div class="message bot">Hi! I'm your task assistant. How can I help you today?</div>
+  </div>
+  <input type="text" id="copilot-input" placeholder="Type your question..." onkeypress="handleInput(event)">
+</div>
+
+
+  <!-- Welcome Section -->
+  <section id="home" aria-labelledby="welcome-section">
+    <h1 id="welcome-section">Welcome to TO Do APPLICATION</h1>
+    <p>Stay organized, focused, and productive. <br>
+      Start managing your tasks efficiently — one step at a time!</p>
+  </section>
+
+  <!-- Sign Up / Sign In Form Section -->
+  <section id="auth-forms" style="display: none;">
+    <div class="form-container">
+      <!-- Sign Up Form -->
+      <div id="sign-up-form">
+        <h2>Sign Up</h2>
+        <form action="#" method="POST">
+          <input type="text" name="username" placeholder="Username" required>
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <button type="submit">Sign Up</button>
+        </form>
+        <button class="toggle-btn" onclick="toggleForms()">Already have an account? Sign In</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <div id="sign-in-form" class="form-hidden">
+        <h2>Sign In</h2>
+        <form action="#" method="POST">
+          <input type="email" name="email" placeholder="Email" required>
+          <input type="password" name="password" placeholder="Password" required>
+          <button type="submit">Sign In</button>
+        </form>
+        <button class="toggle-btn" onclick="toggleForms()">Don't have an account? Sign Up</button>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="welcome-workspace-container">
+    <!-- Left: Welcome message -->
+    <div class="welcome-message">
+      <h2>One app for projects, docs, chats, and more.</h2>
+      <p>The Everything App,<br>
+        For work.Get more done, faster — together.</p>
+    </div>
+  
+    <!-- Right: Workspace Setup -->
+    <section class="workspace-setup">
+      <div class="workspace-box">
+        <h2>Set up your Workspace</h2>
+        <p>Start with what you need, customize as you go.</p>
+        <div class="features-grid">
+          <div class="feature-item">Tasks</div>
+          <div class="feature-item">Chat</div>
+          <div class="feature-item">AI</div>
+          <div class="feature-item">Sprints</div>
+          <div class="feature-item">Time Tracking</div>
+          <div class="feature-item">Calendar</div>
+          <div class="feature-item">Docs</div>
+          <div class="feature-item">Goals</div>
+          <div class="feature-item">Dashboards</div>
+          <div class="feature-item">Whiteboards</div>
+          <div class="feature-item">Forms</div>
+          <div class="feature-item">Automations</div>
+        </div>
+        <button class="get-started-btn">Get started</button>
+      </div>
+    </section>
+  </div>
+  
+<!-- Features Section -->
+<section id="features">
+  <h2>✨ Features of Our To-Do App</h2>
+  <p>Explore the great features of our To-Do application to stay organized and boost productivity.</p>
+  <div class="model-buttons">
+
+    <!-- Feature 1 -->
+    <div class="card">
+      <div class="emoji">📋</div>
+      <h3>Task Management</h3>
+      <p>Organize and prioritize your tasks efficiently.</p>
+    </div>
+
+    <!-- Feature 2 -->
+    <div class="card">
+      <div class="emoji">🔔</div>
+      <h3>Reminders</h3>
+      <p>Get timely reminders for your tasks.</p>
+    </div>
+
+    <!-- Feature 3 -->
+    <div class="card">
+      <div class="emoji">📅</div>
+      <h3>Calendar Integration</h3>
+      <p>Sync tasks with your calendar for easy access.</p>
+    </div>
+
+    <!-- Feature 4 -->
+    <div class="card">
+      <div class="emoji">🗂️</div>
+      <h3>Organize with Categories</h3>
+      <p>Group your tasks by project, priority, or custom labels.</p>
+    </div>
+
+    <!-- Feature 6 -->
+    <div class="card">
+      <div class="emoji">📱</div>
+      <h3>Responsive Design</h3>
+      <p>Access your to-do list on desktop, tablet, or mobile devices.</p>
+    </div>
+
+    <!-- Feature 7 -->
+    <div class="card">
+      <div class="emoji">🔐</div>
+      <h3>Secure and Private</h3>
+      <p>Your data stays safe and accessible only to you.</p>
+    </div>
+
+  </div>
+</section>
+
+
+  
+
+ <!-- Testimonials Section -->
+<section id="testimonials">
+  <h2>What Our Users Say</h2>
+  <p>Our users love the ease of use and effectiveness of the To-Do App. Here's what they have to say:</p>
+  <div class="model-buttons">
+
+    <!-- Testimonial 1 -->
+    <div class="card">
+      <div class="emoji">😊</div>
+      <h3>John Doe</h3>
+      <p>"This app has completely changed how I manage my day. Simple, fast, and super effective!"</p>
+    </div>
+
+    <!-- Testimonial 2 -->
+    <div class="card">
+      <div class="emoji">😊</div>
+      <h3>Sarah L., Freelancer</h3>
+      <p>"From grocery lists to work projects, this app keeps me organized without the stress."</p>
+    </div>
+
+    <!-- Testimonial 3 -->
+    <div class="card">
+      <div class="emoji">👍</div>
+      <h3>Jane Smith</h3>
+      <p>"I’ve tried many task managers, but this one just clicks. Love the clean design and reminders!"</p>
+    </div>
+
+    <!-- Testimonial 4 -->
+    <div class="card">
+      <div class="emoji">💼</div>
+      <h3>Raj M., Software Developer</h3>
+      <p>"Perfect tool for managing my sprint tasks and personal goals. It’s minimal yet powerful."</p>
+    </div>
+
+    <!-- Testimonial 5 -->
+    <div class="card">
+      <div class="emoji">🎯</div>
+      <h3>Ayesha K., Student</h3>
+      <p>"Helps me stay on top of assignments and exams. Super helpful reminders and categories!"</p>
+    </div>
+
+    <!-- Testimonial 6 -->
+    <div class="card">
+      <div class="emoji">🌟</div>
+      <h3>Michael T., Entrepreneur</h3>
+      <p>"I manage my team’s daily goals with this app. Easy to use and reliable – highly recommended."</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="team-section">
+  <h2>Meet Our Teams 🔥</h2>
+  <p>We're a group of passionate students working together on this To-Do App project.</p>
+  <div class="team-grid">
+    <div class="team-member">
+      <img src="me.jpeg" alt="Member 1">
+      <h3>Md Ripon Al Mamun</h3>
+      <p>Computer Engineering <br>East West University</p>
+      <div class="team-hover">
+        <p>East West University<br>Frontend Developer<br>Loves React & UI Design</p>
+      </div>
+    </div>
+    <div class="team-member">
+      <img src="imran.jpeg" alt="Member 2">
+      <h3>Md Imran</h3>
+      <p>Computer Engineering <br>East West University</p>
+      <div class="team-hover">
+        <p>East West University<br>Backend Developer<br>Focuses on APIs & Databases</p>
+      </div>
+    </div>
+    <div class="team-member">
+      <img src="bissojit.jpeg" alt="Member 3">
+      <h3>Bishowjit Banik</h3>
+      <p>Computer Engineering <br>East West University</p>
+      <div class="team-hover">
+        <p>East West University<br>Fullstack Developer<br>Enjoys building scalable apps</p>
+      </div>
+    </div>
+    <div class="team-member">
+      <img src="shafi.jpeg" alt="Member 4">
+      <h3>Mahmud Bin Shafi</h3>
+      <p>Computer Engineering <br>East West University</p>
+      <div class="team-hover">
+        <p>East West Universityy<br>UI/UX Designer<br>Passionate about user-centered design</p>
+      </div>
+    </div>
+    <div class="team-member">
+      <img src="shafkat.jpeg" alt="Member 5">
+      <h3>Shafqat Srijon </h3>
+      <p>Computer Engineering <br>East West University</p>
+      <div class="team-hover">
+        <p>East West University<br>AI Specialist<br>Works on intelligent features</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Contact Section -->
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <p>If you have any questions or need support, feel free to reach out to us!</p>
+    <form action="#">
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <textarea placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; Made By EWU Software Engineering Group 1</p>
+  </footer>
+
+  <script>
+    function toggleForms() {
+      const signUpForm = document.getElementById("sign-up-form");
+      const signInForm = document.getElementById("sign-in-form");
+      const authSection = document.getElementById("auth-forms");
+
+      // Toggle the visibility of the forms
+      signUpForm.classList.toggle("form-hidden");
+      signInForm.classList.toggle("form-hidden");
+
+      // Toggle the form section visibility
+      authSection.style.display = 'block';
+    }
+  </script>
+<script>
+function toggleCopilot() {
+  const chatBox = document.getElementById("copilot-chat");
+  chatBox.classList.toggle("form-hidden");
+}
+
+
+  function handleInput(event) {
+    if (event.key === "Enter") {
+      const input = document.getElementById("copilot-input");
+      const messages = document.getElementById("copilot-messages");
+      const userText = input.value.trim();
+      if (userText !== "") {
+        const userMessage = document.createElement("div");
+        userMessage.className = "message user";
+        userMessage.textContent = userText;
+        messages.appendChild(userMessage);
+        
+        // Fake bot response (can be replaced with real AI backend)
+        const botMessage = document.createElement("div");
+        botMessage.className = "message bot";
+        botMessage.textContent = "🤖 I'm just a demo assistant. Try asking about features!";
+        messages.appendChild(botMessage);
+
+        input.value = "";
+        messages.scrollTop = messages.scrollHeight;
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
